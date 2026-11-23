@@ -21,7 +21,8 @@ static int	test_layouts(void)
 	return (1);
 }
 
-static int	capture_board(char *output, size_t capacity, int **rows)
+static int	capture_board(char *output, size_t capacity, int **rows,
+		size_t size, size_t height, size_t width)
 {
 	int		pipes[2];
 	int		saved_stdout;
@@ -36,7 +37,7 @@ static int	capture_board(char *output, size_t capacity, int **rows)
 	if (dup2(pipes[1], STDOUT_FILENO) < 0)
 		return (close(saved_stdout), close(pipes[0]), close(pipes[1]), 0);
 	close(pipes[1]);
-	status = draw_game_board(rows, 5, 30, 80);
+	status = draw_game_board(rows, size, height, width);
 	if (dup2(saved_stdout, STDOUT_FILENO) < 0)
 		return (close(saved_stdout), close(pipes[0]), 0);
 	close(saved_stdout);
@@ -93,9 +94,11 @@ static int	test_board_render(void)
 	}
 	map[0][0] = 2;
 	map[4][4] = 2048;
-	if (!capture_board(output, OUTPUT_CAPACITY, rows))
+	if (!capture_board(output, OUTPUT_CAPACITY, rows, 5, 30, 80))
 		return (0);
-	return (output_is_centered(output));
+	if (!output_is_centered(output))
+		return (0);
+	return (capture_board(output, OUTPUT_CAPACITY, rows, 4, 30, 100));
 }
 
 int	main(void)

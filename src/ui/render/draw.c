@@ -101,6 +101,26 @@ static wchar_t	*get_small_row(int *row, size_t size, t_layout *layout)
 	return (out);
 }
 
+static wchar_t	*get_big_row(int *row, size_t size, t_layout *layout)
+{
+	size_t	i;
+	wchar_t	*out;
+
+	out = get_vertical_separator(layout->cell_h);
+	if (!out)
+		return (NULL);
+	i = 0;
+	while (i < size)
+	{
+		if (!append_part(&out, get_ascii_art_box(row[i], layout)))
+			return (NULL);
+		if (!append_part(&out, get_vertical_separator(layout->cell_h)))
+			return (NULL);
+		i++;
+	}
+	return (out);
+}
+
 static size_t	append_centered(wchar_t *out, size_t pos, wchar_t *row,
 		size_t padding)
 {
@@ -125,7 +145,7 @@ static size_t	append_centered(wchar_t *out, size_t pos, wchar_t *row,
 	return (pos);
 }
 
-static int	draw_small(int **map, size_t size, t_layout *layout)
+static int	draw(int **map, size_t size, t_layout *layout, int small)
 {
 	wchar_t	*out;
 	wchar_t	*row;
@@ -155,8 +175,10 @@ static int	draw_small(int **map, size_t size, t_layout *layout)
 			else
 				row = get_grid_row(size, layout->cell_w, ROW_INSIDE);
 		}
-		else
+		else if (small)
 			row = get_small_row(map[i / 2], size, layout);
+		else
+			row = get_big_row(map[i / 2], size, layout);
 		if (row == NULL)
 			return (free(out), EXIT_FAILURE);
 		pos = append_centered(out, pos, row, layout->pad_left);
@@ -180,5 +202,7 @@ int	draw_game_board(int **map, size_t size, size_t height, size_t width)
 		write(2, "Window too small. Please resize the window.\n", 44);
 		return (EXIT_FAILURE);
 	}
-	return (draw_small(map, size, &layout));
+	if (layout.cell_w == BIG_CELL_W)
+		return (draw(map, size, &layout, 0));
+	return (draw(map, size, &layout, 1));
 }

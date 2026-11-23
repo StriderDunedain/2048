@@ -43,11 +43,11 @@ typedef struct s_layout
 	size_t	total_size;
 }			t_layout;
 
+wchar_t		*get_ascii_art_box(int nb, t_layout *layout);
 int			draw_game_board(int **map, size_t size, size_t height,
 				size_t width);
 int			choose_layout(t_layout *layout, size_t size, size_t height,
 				size_t width);
-wchar_t		*get_ascii_art_digit(int nb);
 wchar_t		*get_grid_row(size_t size, size_t cell_w, t_row type);
 wchar_t		*get_vertical_separator(size_t height);
 wchar_t		*multiline_join(wchar_t *s1, wchar_t *s2);

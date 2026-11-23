@@ -56,17 +56,17 @@ wchar_t	*multiline_join(wchar_t *s1, wchar_t *s2)
 		return (NULL);
 	while (*s1 || *s2)
 	{
-		if (*s1 != '\n' && *s1)
+		if (*s1 != L'\n' && *s1)
 			joined[i] = *s1++;
 		else
 		{
 			joined[i] = *s2;
-			if (*s2 == '\n')
+			if (*s2 == L'\n')
 				s1++;
 			s2++;
 		}
 		i++;
 	}
-	joined[i] = '\0';
+	joined[i] = L'\0';
 	return (joined);
 }

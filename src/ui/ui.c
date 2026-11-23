@@ -6,6 +6,9 @@
 #include "render.h"
 #include "ui.h"
 
+#define MENU_MIN_HEIGHT 7
+#define MENU_MIN_WIDTH 33
+
 static void	centered_text(int row, const char *text, int highlighted)
 {
 	int	column;
@@ -22,6 +25,18 @@ static void	centered_text(int row, const char *text, int highlighted)
 	mvaddnstr(row, column, text, COLS - column);
 	if (highlighted)
 		attroff(A_REVERSE);
+}
+
+static void	draw_too_small(void)
+{
+	const char	*message;
+
+	message = "Window too small.";
+	if (COLS >= 43)
+		message = "Window too small. Please resize the window.";
+	erase();
+	centered_text(LINES / 2, message, 0);
+	refresh();
 }
 
 void	ui_init(void)
@@ -87,10 +102,7 @@ void	ui_draw_game(const t_game *game, unsigned long long best_score)
 	if (draw_game_board(rows, (size_t)game->size, (size_t)height,
 			(size_t)width) != 0)
 	{
-		erase();
-		centered_text(LINES / 2,
-			"Window too small. Please resize the window.", 0);
-		refresh();
+		draw_too_small();
 		return ;
 	}
 	mvprintw(height - 2, 0, "Score: %llu  Best: %llu", game->score,
@@ -107,6 +119,11 @@ void	ui_draw_menu(int selection)
 	int					row;
 	int					index;
 
+	if (LINES < MENU_MIN_HEIGHT || COLS < MENU_MIN_WIDTH)
+	{
+		draw_too_small();
+		return ;
+	}
 	erase();
 	row = LINES / 2 - 3;
 	centered_text(row, "2048", 0);
